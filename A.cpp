@@ -42,6 +42,23 @@ int toVertex(int i, int j) { return i * SIZE + j; }
 
 P toPoint(int v) { return P(v / SIZE, v % SIZE); }
 
+int getStoneCount(const Matrix &A, int v) {
+    auto p = toPoint(v);
+    return A[p.first][p.second];
+}
+
+struct State {
+    vector<int> vec;
+    int root;
+    void push_back(int v) { vec.push_back(v); }
+    void pop_back() { vec.pop_back(); }
+    void clear() { vec.clear(); }
+    int eval(const Matrix &A) {
+        if (root == -1) return 0;
+        return getStoneCount(A, root) * vec.size();
+    }
+};
+
 Graph makeGraph(const Matrix &mat) {
     Graph G;
     rep(i, SIZE) rep(j, SIZE) rep(k, 4) {
@@ -62,15 +79,15 @@ void printGraph(const Graph &G) {
         for (auto u : G[i]) cout << "\t" << u << endl;
     }
 }
-void dfs(const Graph &G, int v, vector<int> &vs, vector<int> &ret) {
+void dfs(const Matrix &A, const Graph &G, int v, State &cur, State &ret) {
     if (G[v].empty()) {
-        if (vs.size() > ret.size()) ret = vs;
+        if (cur.eval(A) > ret.eval(A)) ret = cur;
         return;
     }
     for (auto &u : G[v]) {
-        vs.push_back(u);
-        dfs(G, u, vs, ret);
-        vs.pop_back();
+        cur.push_back(u);
+        dfs(A, G, u, cur, ret);
+        cur.pop_back();
     }
 }
 bool finish(const Matrix &A) {
@@ -86,25 +103,25 @@ int main() {
     ios::sync_with_stdio(false);
     std::cin.tie(0);
     input(A);
-    vector<int> vs, ret;
-    vs.reserve(900);
-    ret.reserve(900);
+    State cur, ret;
+    ret.root = -1;
     while (!finish(A)) {
         cnt++;
         auto G = makeGraph(A);
         rep(i, SIZE) rep(j, SIZE) {
             if (A[i][j] == 0) continue;
             int v = toVertex(i, j);
-            vs.clear();
-            vs.push_back(v);
-            dfs(G, v, vs, ret);
+            cur.clear();
+            cur.push_back(v);
+            cur.root = v;
+            dfs(A, G, v, cur, ret);
         }
-        for (auto &e : ret) {
+        for (auto &e : ret.vec) {
             auto p = toPoint(e);
             breakStone(A, p);
             cout << p << endl;
         }
-        vs.clear();
+        cur.clear();
         ret.clear();
     }
     cerr << cnt << endl;
