@@ -20,17 +20,23 @@ def run_test():
     ret = int(open('result.txt').readline())
     return 100000 - ret
 
-os.system('g++ -std=c++11 -O2 A.cpp')
 seed = 0
+coefficient1 = 1.0
+coefficient2 = 1.5
 if len(sys.argv) != 1:
     seed = int(sys.argv[1])
+    coefficient1 = float(sys.argv[2])
+    coefficient2 = float(sys.argv[3])
+
+os.system("g++ -std=c++11 -O2 A.cpp -D""COEFFICIENT1=%f"" -D""COEFFICIENT2=%f""" % (coefficient1, coefficient2))
+
+print("seed = %d, coefficient1 = %f, coefficient2 = %f" % (seed, coefficient1, coefficient2))
 
 rng.seed(seed)
 score = 0
 for i in range(10):
     s = run_test()
     score += s
-    print("%d: %d" % (i, s))
 
 print("total: %d" % score)
 

@@ -30,6 +30,13 @@ using Vector = array<int, SIZE>;
 using Matrix = array<Vector, SIZE>;
 using Graph = array<vector<int>, SIZE * SIZE>;
 
+#ifndef COEFFICIENT1
+#define COEFFICIENT1 0.3
+#endif
+#ifndef COEFFICIENT2
+#define COEFFICIENT2 0.1
+#endif
+
 std::ostream &operator<<(std::ostream &os, const P &p) {
     os << p.first + 1 << " " << p.second + 1;
     return os;
@@ -52,10 +59,14 @@ struct State {
     int root;
     void push_back(int v) { vec.push_back(v); }
     void pop_back() { vec.pop_back(); }
-    void clear() { vec.clear(); }
-    int eval(const Matrix &A) {
+    void clear() {
+        vec.clear();
+        root = -1;
+    }
+    double eval(const Matrix &A) {
         if (root == -1) return 0;
-        return getStoneCount(A, root) * vec.size();
+        return COEFFICIENT1 * getStoneCount(A, root) +
+               COEFFICIENT2 * vec.size();
     }
 };
 
