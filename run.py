@@ -3,9 +3,9 @@
 import os
 
 seed = 10
-params = [0.1, 0.3, 0.5, 0.7, 1.0]
-for param1 in params:
-    for param2 in params:
-        os.system("./test.py %d %f %f" % (seed, param1, param2))
 
+# -3.5, -5.5
+for param1 in range(-55, -35, 1):
+    #print(param1/100.0)
+    os.system("./test.py %d %f %f %f" % (seed, 3, 1, param1/100.0))
 

@@ -31,10 +31,13 @@ using Matrix = array<Vector, SIZE>;
 using Graph = array<vector<int>, SIZE * SIZE>;
 
 #ifndef COEFFICIENT1
-#define COEFFICIENT1 0.3
+#define COEFFICIENT1 3.0
 #endif
 #ifndef COEFFICIENT2
-#define COEFFICIENT2 0.1
+#define COEFFICIENT2 1.0
+#endif
+#ifndef COEFFICIENT3
+#define COEFFICIENT3 1.0
 #endif
 
 std::ostream &operator<<(std::ostream &os, const P &p) {
@@ -64,9 +67,10 @@ struct State {
         root = -1;
     }
     double eval(const Matrix &A) {
-        if (root == -1) return 0;
+        if (root == -1) return -INF;
         return COEFFICIENT1 * getStoneCount(A, root) +
-               COEFFICIENT2 * vec.size();
+               COEFFICIENT2 * vec.size() +
+               COEFFICIENT3 * getStoneCount(A, vec.back());
     }
 };
 
@@ -117,7 +121,6 @@ int main() {
     State cur, ret;
     ret.root = -1;
     while (!finish(A)) {
-        cnt++;
         auto G = makeGraph(A);
         rep(i, SIZE) rep(j, SIZE) {
             if (A[i][j] == 0) continue;
@@ -127,10 +130,21 @@ int main() {
             cur.root = v;
             dfs(A, G, v, cur, ret);
         }
-        for (auto &e : ret.vec) {
-            auto p = toPoint(e);
-            breakStone(A, p);
-            cout << p << endl;
+
+        int v=ret.root;
+        while(getStoneCount(A, v) > 0) {
+            auto G = makeGraph(A);
+            cur.clear();
+            ret.clear();
+            cur.push_back(v);
+            cur.root = v;
+            dfs(A, G, v, cur, ret);
+            cnt++;
+            for (auto &e : ret.vec) {
+                auto p = toPoint(e);
+                breakStone(A, p);
+                cout << p << endl;
+            }
         }
         cur.clear();
         ret.clear();
