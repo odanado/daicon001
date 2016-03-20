@@ -82,6 +82,7 @@ Graph G;
 Matrix A;
 
 int main() {
+    int cnt = 0;
     ios::sync_with_stdio(false);
     std::cin.tie(0);
     input(A);
@@ -89,6 +90,7 @@ int main() {
     vs.reserve(900);
     ret.reserve(900);
     while (!finish(A)) {
+        cnt++;
         auto G = makeGraph(A);
         rep(i, SIZE) rep(j, SIZE) {
             if (A[i][j] == 0) continue;
@@ -105,5 +107,6 @@ int main() {
         vs.clear();
         ret.clear();
     }
+    cerr << cnt << endl;
     return 0;
 }
